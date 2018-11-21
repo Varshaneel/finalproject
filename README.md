@@ -1,4 +1,4 @@
-# finalproject
+# Final Project
 TRGN510 Final Project 2018
 
 # Proposed Scope of Work       Varsha Neelakantan
@@ -34,13 +34,14 @@ COMPLETED Milestone 2 (11/20/18):  Aligned all the sequences and use featureco
 Milestone 3 (11/27/18):  Final stages of analysing differentially expressed genes using R
 
 
-#CURRENT PROGRESS (11_20_2018)
+# CURRENT PROGRESS (11_20_2018)
+
 Used STAR To align the fastq files and the output was generated in BAM format.
 featurecounts (In R) was used to read the bam outputs and generate read counts.
 DeSEQ2 was used to analyse the differential expression of genes in the samples.
 Volcano plots and Heatmaps generated
 
-#TO BE COMPLETED BY 11/27
+## TO BE COMPLETED BY 11/27
 Make the rmd file a little more organised and give desriptions of the commands
 Make a powerpoint of how the pipeline goes from fastq files to the end result
 
