@@ -219,7 +219,6 @@ p3 <- EnhancedVolcano(res_sad1_sad2,
                       gridlines.minor = FALSE)
 grid.arrange( p3, ncol=2)
 grid.rect(gp=gpar(fill=NA))
-
 ```
 
 
