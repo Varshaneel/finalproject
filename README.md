@@ -42,6 +42,7 @@ DeSEQ2 was used to analyse the differential expression of genes in the samples.
 Volcano plots and Heatmaps generated
 
 ## TO BE COMPLETED BY 11/27
+
 Make the rmd file a little more organised and give desriptions of the commands
 Make a powerpoint of how the pipeline goes from fastq files to the end result
 
