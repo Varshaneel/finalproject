@@ -46,4 +46,10 @@ Volcano plots and Heatmaps generated
 Make the rmd file a little more organised and give desriptions of the commands
 Make a powerpoint of how the pipeline goes from fastq files to the end result
 
+# CURRENT PROGRESS (11_27_2018)
+
+Generated Volcano plots for different comparisons and PCA plots.
+Attempting to make a Shiny R portal to make an interactive volcano plot.
+
+
 
