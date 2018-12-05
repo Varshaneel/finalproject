@@ -51,7 +51,5 @@ Make a powerpoint of how the pipeline goes from fastq files to the end result
 Generated Volcano plots for different comparisons and PCA plots.
 Attempting to make a Shiny R portal to make an interactive volcano plot.
 
-# Final project link:
-(Knit into HTML from R studtio and then published on R pubs)
-http://rpubs.com/varshaneel/finalproject 
+# Final project submitted : 12_04_2018
 
