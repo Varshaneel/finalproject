@@ -40,6 +40,9 @@ mkdir Homo_sapiens_NCBI_GRCh38/Homo_sapiens/NCBI/GRCh38/Sequence/STAR_Index
 scp /Users/varshaneelakantan/Desktop/TRGN510\ FINAL\ PROJECT/044_sAD_PC_002.fastq.gz varsha@trgn.bioinform.io:./Finalproject
 ```
 
+It is easier to have all the files in one folder so running it would be simpler for example:
+
+![](/Users/varshaneelakantan/Desktop/abc.png){ width=50% }
 
 ##Run STAR (In Bash/Terminal) 
 *Troubleshooting:* STAR Requires upto 32GB of RAM. So the alignment was done in the TRGN server.
@@ -48,6 +51,11 @@ scp /Users/varshaneelakantan/Desktop/TRGN510\ FINAL\ PROJECT/044_sAD_PC_002.fast
 STAR --runThreadN 6 --genomeDir /home/varsha/Finalproject/Homo_sapiens/NCBI/GRCh38/Sequence/STAR_Index --readFilesIn 131_sAD_PC_001.fastq.gz,131_sAD_PC_002.fastq.gz,131_sAD_PC_003.fastq.gz,131_sAD_PC_004.fastq.gz --readFilesCommand zcat  --outFileNamePrefix /home/varsha/Finalproject/bamfiles/131_sAD --outSAMtype BAM Unsorted SortedByCoordinate
 ```
 
+Saved all the output to another folder called bamfiles. In the output, the data we are interested in are the ones in pink labelled as XXXAligned.out.bam
+
+These bam files are then transferred back to my local computer using "sftp" command
+
+![](/Users/varshaneelakantan/Desktop/def.png){ width=50% }
 
 ##Install and Load Libraries required for Featurecounts
 
@@ -73,7 +81,7 @@ library(genefilter)
 ```
 
 ##Set working Directory
-####It is easier if all your bam files and gtf files is in this location. I used "sftp" to get the files from the server to the local computer
+
 ```{r}
 setwd("/Users/varshaneelakantan/Desktop/test")
 ```
@@ -104,6 +112,9 @@ coldata <- read.delim("coldata.txt", sep = "\t") #Made an excel with the column 
 coldata <- as.data.frame(coldata)
 head(coldata)
 ```
+
+
+
 
 #Run DESEQ2
 ###Run the libararies first. 
@@ -280,6 +291,11 @@ PDE1A- is a  phosphodiesterase enzyme, and is known to be involved in learning a
 
 PADI2-Peptidylarginine deiminases, has been shown to be associated with amyloid beta processing. 
 
+
+
+
+
+
 #Conclusion:
 
 ![](/Users/varshaneelakantan/Desktop/pic2.jpg){ width=50% }
@@ -287,7 +303,6 @@ PADI2-Peptidylarginine deiminases, has been shown to be associated with amyloid 
 Figure2: GWAS analysis of AD patients for potential high risk genes. 
 
 From our data, we see that the genetic profiles of the two AD patients are quite different from each other and APOE (which is one of the prominent risk factors of AD) is clearly downregulated in one of the patients but the physiological effects are similar - Blood-brain barrier leakiness and amyloid beta accumulation. So this could mean that more than one gene is responsible for the disease. 
-It is also known that the patient pericytes we have received, carry an APOE3 allele which is the most common form. APOE4 allele is what is known to be the risk factor (as shown in the figure as well).
 
 ##References:
 
