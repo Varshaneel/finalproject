@@ -33,23 +33,37 @@ COMPLETED Milestone 1 (11/13/18): Read up on how to use STAR and Gencode for se
 COMPLETED Milestone 2 (11/20/18):  Aligned all the sequences and use featurecount to count the reads
 Milestone 3 (11/27/18):  Final stages of analysing differentially expressed genes using R
 
+## Progress as of 11_13_2018
 
-## CURRENT PROGRESS (11_20_2018)
+Got the Fastq files and tried running STAR for alignment. There were issues running the software in my Mac because it required over 32 GM ram. Tried different approaches but didn't work
 
-Used STAR To align the fastq files and the output was generated in BAM format.
+### Feedback: 
+
+Run the program on teh HPC or trgn server. 
+
+## Progress as of 11_20_2018
+
+Used STAR To align the fastq files and the output was generated in BAM format.All this was done on the TRGN server as it had more memory. 
 featurecounts (In R) was used to read the bam outputs and generate read counts.
 DeSEQ2 was used to analyse the differential expression of genes in the samples.
 Volcano plots and Heatmaps generated
 
-## TO BE COMPLETED BY 11/27
+### Feedback:
 
-Make the rmd file a little more organised and give desriptions of the commands
+To document the progress so far and get shiny portal for the volcano plotes to make it interactive.
+Make the rmd file a little more organised 
 Make a powerpoint of how the pipeline goes from fastq files to the end result
 
-## CURRENT PROGRESS (11_27_2018)
+## Progress as of 11_27_2018
 
 Generated Volcano plots for different comparisons and PCA plots.
-Attempting to make a Shiny R portal to make an interactive volcano plot.
+Attempting to make a Shiny R portal to make an interactive volcano plot
+Trouble in kniting the R markdown and making the HTML file into a weblink that can be seen by people.
+
+### Feedback:
+
+Use Rpubs for publishing the R markdown file
+Try using R shiny interactive platform
 
 # Final project submitted : 12_04_2018
 
