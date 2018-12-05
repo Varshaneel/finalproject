@@ -1,23 +1,65 @@
 ---
-title: "Final Project"
-author: "Varsha"
+title: "Final Project - Differential Expression Analysis in sporadic Alzheimer's disease patients"
+author: "Varsha Neelakantan"
 date: "11/19/2018"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
-#Install and Load Libraries required for Featurecounts
+#Introduction
 
-```{r}
-#BiocManager::install("Rsubread")
-#BiocManager::install("DESeq2")
-#BiocManager::install("Biobase")
-#BiocManager::install("limma")
-#BiocManager::install("EnhancedVolcano")
+One of the pathologies of __Alzheimers__ __disease__ is dysfunctional/disrupted BBB. __Pericytes__ are cells that belong to the Blood-Brain Barrier and play an important role in maintaining the **blood** **brain** **barrier** integrity as well as in the functioning of the barrier. 
+I want to identify differentially expressed genes in primary brain pericytes from sAD (Sporadic AD) patients compared to normal/WT pericytes. 
+RNA seq data was obtained from Normal/Healthy patients and two sAD patients. 
+The goal is to identify if the genetic basis of this disease is similar and what could be the major players in Alzheimers Disease
+
+![](/Users/varshaneelakantan/Desktop/pic1.jpg){ width=50% }
+
+Figure1: Shows the localization of pericytes and its role in the blood brain barrier 
+(Green represents pericytes and the pink represents endothelial cells)
+
+
+###**Datasets used:** 
+
+RNA Sequence data in FASTQ format are available from 2 sAD patients(in duplicates) and 1 WT. 
+
+##Data Retrieval and Alignment 
+###Get gene annotation files for STAR aligner (In Bash/Terminal)
+```{bash eval=FALSE, echo=TRUE}
+mkdir Finalproject
+cd Finalproject
+wget ftp://igenome:G3nom3s4u@ussd-ftp.illumina.com/Homo_sapiens/NCBI/GRCh38/Homo_sapiens_NCBI_GRCh38.tar.gz
+gunzip Homo_sapiens_NCBI_GRCh38.tar.gz
+mkdir Homo_sapiens_NCBI_GRCh38/Homo_sapiens/NCBI/GRCh38/Sequence/STAR_Index
 ```
 
-```{r}
+
+###Transfer the files from local computer to remote server (In Bash/Terminal)
+```{bash eval=FALSE, echo=TRUE}
+scp /Users/varshaneelakantan/Desktop/TRGN510\ FINAL\ PROJECT/044_sAD_PC_002.fastq.gz varsha@trgn.bioinform.io:./Finalproject
+```
+
+
+##Run STAR (In Bash/Terminal) 
+*Troubleshooting:* STAR Requires upto 32GB of RAM. So the alignment was done in the TRGN server.
+
+```{bash eval=FALSE, echo=TRUE}
+STAR --runThreadN 6 --genomeDir /home/varsha/Finalproject/Homo_sapiens/NCBI/GRCh38/Sequence/STAR_Index --readFilesIn 131_sAD_PC_001.fastq.gz,131_sAD_PC_002.fastq.gz,131_sAD_PC_003.fastq.gz,131_sAD_PC_004.fastq.gz --readFilesCommand zcat  --outFileNamePrefix /home/varsha/Finalproject/bamfiles/131_sAD --outSAMtype BAM Unsorted SortedByCoordinate
+```
+
+
+##Install and Load Libraries required for Featurecounts
+
+```{r eval=FALSE, echo=TRUE}
+BiocManager::install("Rsubread")
+BiocManager::install("DESeq2")
+BiocManager::install("Biobase")
+BiocManager::install("limma")
+BiocManager::install("EnhancedVolcano")
+```
+
+```{r results='hide', message=FALSE, warning=FALSE}
 library(BiocManager)
 library(Rsubread)
 library(DESeq2)
@@ -30,43 +72,49 @@ library(gridExtra)
 library(genefilter)
 ```
 
-#Set working Directory
+##Set working Directory
+####It is easier if all your bam files and gtf files is in this location. I used "sftp" to get the files from the server to the local computer
 ```{r}
 setwd("/Users/varshaneelakantan/Desktop/test")
 ```
 
 #RunFeatureCounts
-```{r}
-#featureCounts(files=c("wtAligned.out.bam", "044_b_sADAligned.out.bam", "044_sADAligned.out.bam" , "131_sADAligned.out.bam" , "131_b_sADAligned.out.bam"),annot.ext="genes.gtf", isGTFAnnotationFile=TRUE,GTF.featureType="exon",GTF.attrType="gene_id")
-#fc <- featureCounts(files=c("wtAligned.out.bam", "044_b_sADAligned.out.bam", "044_sADAligned.out.bam" , "131_sADAligned.out.bam" , "131_b_sADAligned.out.bam"),annot.ext="genes.gtf", isGTFAnnotationFile=TRUE,GTF.featureType="exon",GTF.attrType="gene_id")
+####Note: my gtf file has the Gene names already. In cases where the gtf file only has the gene ID you need to get the gene names from some other resource like NCBI.
+
+####The Subread package allows us to analyse next gen sequencing data. The featurecounts function is for counting reads to genomic features 
+```{r eval=FALSE, echo=TRUE}
+featureCounts(files=c("wtAligned.out.bam", "044_b_sADAligned.out.bam", "044_sADAligned.out.bam" , "131_sADAligned.out.bam" , "131_b_sADAligned.out.bam"),annot.ext="genes.gtf", isGTFAnnotationFile=TRUE,GTF.featureType="exon",GTF.attrType="gene_id")
+fc <- featureCounts(files=c("wtAligned.out.bam", "044_b_sADAligned.out.bam", "044_sADAligned.out.bam" , "131_sADAligned.out.bam" , "131_b_sADAligned.out.bam"),annot.ext="genes.gtf", isGTFAnnotationFile=TRUE,GTF.featureType="exon",GTF.attrType="gene_id")
 ```
 
-
-#Save data as a txt file
-```{r}
-#write.table(x=data.frame(fc$annotation[,c("GeneID","Length")],fc$counts,stringsAsFactors=FALSE),file="readcounts.txt",quote=FALSE,sep="\t",row.names=FALSE)
+##Save data as a txt file
+```{r eval=FALSE, echo=TRUE}
+write.table(x=data.frame(fc$annotation[,c("GeneID","Length")],fc$counts,stringsAsFactors=FALSE),file="readcounts.txt",quote=FALSE,sep="\t",row.names=FALSE)
 ```
-
 
 #Differential Analysis using DESeq
-##Reading Data
+###Reading Data
+####Make "Coldata" as a table that contains the sample names and the type/condition (example: WT/Control, Sample1/Test etc). You may get an error because of dupplicates in the featurecounts file. In order to go past that you need to look for those duplicates and delete them. 
+
 ```{r}
 dds <- read.delim("featurecounts_output.txt" , sep = "\t" , header=TRUE, row.names = 1)  #Removed Duplicates from the file or else error keeps popping up
 dds <- dds[-c(1)] #Ignoring the Length column
 data <- as.data.frame(dds)
 coldata <- read.delim("coldata.txt", sep = "\t") #Made an excel with the column names of the different samples
 coldata <- as.data.frame(coldata)
-View(coldata)
+head(coldata)
 ```
 
-
-##Run DESEQ
-```{r}
+#Run DESEQ2
+###Run the libararies first. 
+ 
+```{r message=FALSE, warning=FALSE}
 dds_output <- DESeqDataSetFromMatrix(countData = data,
                               colData = coldata,
                               design = ~ Condition)
 
 deseq_dds <- DESeq(dds_output)
+
 res_test2 <- results(deseq_dds, contrast = c("Condition", "Control" , "test2"))
 res_test1 <- results(deseq_dds, contrast = c("Condition", "Control" , "test1"))
 
@@ -74,81 +122,75 @@ resa <- results(deseq_dds, contrast = c("Condition", "test1" , "Control"))
 resb <- results(deseq_dds, contrast = c("Condition", "test2" , "Control"))
 res_sad1_sad2 <- results(deseq_dds, contrast = c("Condition", "test2" , "test1"))
 ```
-#Summary of the results
-```{r}
-#mcols(res_test1, use.names=TRUE)
-#mcols(res_test2, use.names=TRUE)
-#sizeFactors(deseq_dds) #The size factors sj are accessible via sizeFactors
+
+###Size factors or normalization factors for stabilizing the variance in the samples
+```{r eval=TRUE, echo=TRUE}
+sizeFactors(deseq_dds)
 ```
 
-#ReOrdering based on Lowest p value
+###Reordering based on Lowest p value
+#####Showing and example of how the data looks like as a data frame
 ```{r}
 resOrdered_1 <- res_test1[order(res_test1$pvalue),]
 resOrdered_2 <- res_test2[order(res_test2$pvalue),]
 resOrdered_sAD1vsctrl <- resa[order(resa$pvalue),]
 resOrdered_sAD2vsctrl <- resb[order(resb$pvalue),]
 resOrdered_sAD2vssAD1 <- res_sad1_sad2[order(res_sad1_sad2 $pvalue),]
-```
-#Setting a cutoff p value 
-```{r}
-#sum(resOrdered_1$padj < 0.1, na.rm=TRUE)
-#sum(resOrdered_2$padj < 0.1, na.rm=TRUE)
-#res05 <- results(deseq_dds, alpha=0.05)
-#summary(res05)
-#resultsNames(deseq_dds)
+head(resOrdered_sAD2vsctrl) 
 ```
 
-#Exporting data into csv files
-```{r}
-#write.csv(as.data.frame(resOrdered_1), file="dds_ctrlvssAD1.csv")
-#write.csv(as.data.frame(resOrdered_2), file="dds_ctrlvssAD2.csv")
-#write.csv(as.data.frame(resOrdered_sAD1vsctrl), file="dds_sAD1vsctrl.csv")
-#write.csv(as.data.frame(resOrdered_sAD2vsctrl), file="dds_sAD2vsctrl.csv")
-#write.csv(as.data.frame(resOrdered_sAD2vssAD1), file="dds_sAD2vssAD1.csv")
+###Exporting data into csv files
+```{r eval=FALSE, echo=TRUE}
+write.csv(as.data.frame(resOrdered_1), file="dds_ctrlvssAD1.csv")
+write.csv(as.data.frame(resOrdered_2), file="dds_ctrlvssAD2.csv")
+write.csv(as.data.frame(resOrdered_sAD1vsctrl), file="dds_sAD1vsctrl.csv")
+write.csv(as.data.frame(resOrdered_sAD2vsctrl), file="dds_sAD2vsctrl.csv")
+write.csv(as.data.frame(resOrdered_sAD2vssAD1), file="dds_sAD2vssAD1.csv")
 
 ```
 
-#Generating plots fpr data distributions
-##Plot for how the data is dispersed
+
+###Plot for how the data is dispersed
+####This shows how deseq runs the program to give you a final data point
 ```{r}
 plotDispEsts(deseq_dds, ylim = c(1e-6, 1e1) )
 ```
 
-#To make it rlog transformed data
-
+###To make it rlog transformed data
+#####Showing and example of how the data looks like as a data frame
 ```{r}
 rld <- rlog(deseq_dds)
 head( assay(rld) )
 ```
-#Generating PLots from R transformed data
-##Heatmap of Euclidean sample distances after rlog transformation
-###Data used is rlog transformed
-```{r}
-sampleDists <- dist( t( assay(rld) ) )
-sampleDists
-sampleDistMatrix <- as.matrix( sampleDists )
-rownames(sampleDistMatrix) <- paste( rld$treatment,
-                                     rld$patient, sep="-" )
-colnames(sampleDistMatrix) <- NULL
 
-colours = colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
-heatmap.2( sampleDistMatrix, trace="none", col=colours)
+###PCA - To know how different are the patient pericytes in comparison to wild type or control
+
+The PCA shows that there is very little variance in the replicates but there is not too much variance between the replicates of the patient RNA but they are different from each other and the wild type.
+```{r}
+plotPCA(rld, intgroup = "Condition")
 ```
 
 
-##Heatmap for top 50 variable genes
-###Data used is rlog transformed
-```{r}
+
+##Generating Plots
+###Heatmap for top 50 variable genes
+#####Data used is rlog transformed
+```{r  fig.height = 10, fig.width = 10, fig.align = "center"}
 topVarGenes <- head( order( rowVars( assay(rld) ), decreasing=TRUE ), 50 )
-heatmap.2( assay(rld)[ topVarGenes, ], scale="row",
-           trace="none", dendrogram="column",
+heatmap.2( assay(rld)[ topVarGenes, ], scale="row", sepwidth=c(0.5,0.5), 
+           trace="none", dendrogram="column", cexRow=0.75,
            col = colorRampPalette( rev(brewer.pal(9,"RdBu")) )(255))
 ```
 
-##Volcano plot (Using Enhanced volcano plots package by Kevin Blighe)
-###Data used is the original results from deseq analysis
 
-```{r}
+
+###Volcano plot 
+#####(Using Enhanced volcano plots package by Kevin Blighe)
+#####NOTE: sADa refers to sAD 1 and 2 in the heatmap data. sADb refers to sAD 3 and 4
+######Data used is the original results from deseq analysis
+
+
+```{r warning=FALSE,  fig.height = 10, fig.width = 12, fig.align = "center"}
 p1 <- EnhancedVolcano(resa,
                       lab = rownames(resa),
                       x = "log2FoldChange",
@@ -156,9 +198,9 @@ p1 <- EnhancedVolcano(resa,
                       pCutoff = 10e-8,
                       FCcutoff = 2.0,
                       xlim = c(-10,10),
-                      ylim = c(0, 200),
-                      transcriptLabSize = 2.5,
-                      title = "sADa Versus Control",
+                      ylim = c(0, 150),
+                      transcriptLabSize = 3.0,
+                      title = "sAD Versus Control",
                       colAlpha = 1,
                       legendPosition = "bottom",
                       legendLabSize = 10,
@@ -181,8 +223,8 @@ p2 <- EnhancedVolcano(resb,
                       FCcutoff = 2.0,
                       xlim = c(-10,10),
                       ylim = c(0, 300),
-                      transcriptLabSize = 2.5,
-                      title = "sADb Versus Control",
+                      transcriptLabSize = 3.0,
+                      title = "sAD Versus Control",
                       colAlpha = 1,
                       legend=c("NS","Log2 FC","P","P & Log2 FC"),
                       legendPosition = "bottom",
@@ -204,8 +246,8 @@ p3 <- EnhancedVolcano(res_sad1_sad2,
                       pCutoff = 10e-8,
                       FCcutoff = 2.0,
                       xlim = c(-10,10),
-                      ylim = c(0, 300),
-                      transcriptLabSize = 2.5,
+                      ylim = c(0, 250),
+                      transcriptLabSize = 3.0,
                       title = "sADb Versus sADa",
                       colAlpha = 1,
                       legend=c("NS","Log2 FC","P","P & Log2 FC"),
@@ -217,8 +259,40 @@ p3 <- EnhancedVolcano(res_sad1_sad2,
                       borderColour = "black",
                       gridlines.major = FALSE,
                       gridlines.minor = FALSE)
+
 grid.arrange( p3, ncol=2)
 grid.rect(gp=gpar(fill=NA))
+
 ```
 
+#Results: 
+
+Amongst the highly varying genes, we see many genes that have an assiciation with AD. 
+APOE-ApolipoproteinE which is known to be associated with Alzheimer's Disease
+
+FBLN2- Is a protein that is involved in calcium ion binding and ECM binding. Pericytes are contractile cells that contract in response to calcium and potassium levels and defect in this gene could affect the pericyte function. 
+
+THBS2 - Thrombospondin 2, is a glycoprotein that is involved in cell-cell adhesion. Pericytes are usually wrapped around endothelial cells in capillaries and need to establish a strong cell contact for maintaining the blood-brain barrier. 
+
+PDE1A- is a  phosphodiesterase enzyme, and is known to be involved in learning and is found in brain regions that subserve memory and learning, including frontal cortex, hippocampus.
+
+ NTRK2 - Neurotrophic tyrosine kinase receptor type 2: The NTRK family encodes the receptors TRKA, TRKB, and TRKC, to which the neurotrophins, nerve growth factor (NGF), BDNF and neurotrophin-3 (NT-3) (regulates neuronal development and plasticity, long-term potentiation, and apoptosis) bind with high affinity. 
+
+PADI2-Peptidylarginine deiminases, has been shown to be associated with amyloid beta processing. 
+
+#Conclusion:
+
+![](/Users/varshaneelakantan/Desktop/pic2.jpg){ width=50% }
+
+Figure2: GWAS analysis of AD patients for potential high risk genes. 
+
+From our data, we see that the genetic profiles of the two AD patients are quite different from each other and APOE (which is one of the prominent risk factors of AD) is clearly downregulated in one of the patients but the physiological effects are similar - Blood-brain barrier leakiness and amyloid beta accumulation. So this could mean that more than one gene is responsible for the disease. 
+It is also known that the patient pericytes we have received, carry an APOE3 allele which is the most common form. APOE4 allele is what is known to be the risk factor (as shown in the figure as well).
+
+##References:
+
+1.	"Exome Sequencing of Extended Families with Alzheimer's Disease Identifies Novel Genes Implicated in Cell Immunity and Neuronal Function". Cukier HN (2017)
+2.	"Preclinical profile of ITI-214, an inhibitor of phosphodiesterase 1, for enhancement of memory performance in rats" Gretchen L. Snyder (2016)
+3.	"Genetic association of neurotrophic tyrosine kinase receptor type 2 (NTRK2) With Alzheimer's disease" Chen Z(2008)
+4.	"Increased expression of PAD2 after repeated intracerebroventricular infusions of soluble Abeta(25-35) in the Alzheimer's disease model rat brain: effect of memantine" Arif.M (2009)
 
