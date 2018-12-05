@@ -34,7 +34,7 @@ COMPLETED Milestone 2 (11/20/18):  Aligned all the sequences and use featureco
 Milestone 3 (11/27/18):  Final stages of analysing differentially expressed genes using R
 
 
-# CURRENT PROGRESS (11_20_2018)
+## CURRENT PROGRESS (11_20_2018)
 
 Used STAR To align the fastq files and the output was generated in BAM format.
 featurecounts (In R) was used to read the bam outputs and generate read counts.
@@ -46,10 +46,12 @@ Volcano plots and Heatmaps generated
 Make the rmd file a little more organised and give desriptions of the commands
 Make a powerpoint of how the pipeline goes from fastq files to the end result
 
-# CURRENT PROGRESS (11_27_2018)
+## CURRENT PROGRESS (11_27_2018)
 
 Generated Volcano plots for different comparisons and PCA plots.
 Attempting to make a Shiny R portal to make an interactive volcano plot.
 
-
+# Final project link:
+(Knit into HTML from R studtio and then published on R pubs)
+http://rpubs.com/varshaneel/finalproject 
 
