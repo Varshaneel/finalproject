@@ -64,6 +64,8 @@ Trouble in kniting the R markdown and making the HTML file into a weblink that c
 
 There was a problem in making the interactive volcano plot. The code kept giving errors of different kinds, mainly relating to the negative P value. 
 
+beta version of the project was shown in class. Final changes as required were made.
+
 ### Feedback:
 
 Use Rpubs for publishing the R markdown file
