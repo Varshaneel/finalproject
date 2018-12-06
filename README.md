@@ -39,7 +39,7 @@ Got the Fastq files and tried running STAR for alignment. There were issues runn
 
 ### Feedback: 
 
-Run the program on teh HPC or trgn server. 
+Run the program on teh HPC or trgn server - with increased memory space. There was a problem with thr Run Thread comment and the session kept getting killed, but that was later sorted.
 
 ## Progress as of 11_20_2018
 
@@ -51,8 +51,10 @@ Volcano plots and Heatmaps generated
 ### Feedback:
 
 To document the progress so far and get shiny portal for the volcano plotes to make it interactive.
+Either 3D volcano plots or to hover over the volcano plot and show data points.
 Make the rmd file a little more organised 
 Make a powerpoint of how the pipeline goes from fastq files to the end result
+
 
 ## Progress as of 11_27_2018
 
@@ -60,10 +62,13 @@ Generated Volcano plots for different comparisons and PCA plots.
 Attempting to make a Shiny R portal to make an interactive volcano plot
 Trouble in kniting the R markdown and making the HTML file into a weblink that can be seen by people.
 
+There was a problem in making the interactive volcano plot. The code kept giving errors of different kinds, mainly relating to the negative P value. 
+
 ### Feedback:
 
 Use Rpubs for publishing the R markdown file
-Try using R shiny interactive platform
+Try using R shiny interactive platform.
+
 
 # Final project submitted : 12_04_2018
 
